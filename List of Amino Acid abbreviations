@@ -1,0 +1,29 @@
+import java.util.Scanner;
+
+public class AminoAcidSearch {
+    public static void main(String[] args) {
+        // Define the array of amino acid abbreviations
+        String[] aminoAcids = {"Trp", "Arg", "Liu", "Ilu", "Asp"};
+
+        // Get the user's input for the amino acid abbreviation
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter three letter amino acid abbreviation: ");
+        String inputAcid = scanner.nextLine();
+
+        // Search for the amino acid abbreviation in the array
+        boolean found = false;
+        for (String acid : aminoAcids) {
+            if (acid.equals(inputAcid)) {
+                found = true;
+                break;
+            }
+        }
+
+        // Print whether the amino acid was found or not
+        if (found) {
+            System.out.println("Amino acid found");
+        } else {
+            System.out.println("Amino acid NOT found");
+        }
+    }
+}
