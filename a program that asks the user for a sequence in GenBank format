@@ -1,0 +1,35 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
+
+public class GenBankToFASTA {
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the name of the GenBank file: ");
+        String filename = scanner.nextLine();
+
+        String contents = new String(Files.readAllBytes(Paths.get(filename)));
+
+        // Extract the sequence from the contents
+        String sequence = contents.substring(contents.indexOf("ORIGIN") + 6)
+                                   .replaceAll("\\s", "");
+
+        // Format the sequence in FASTA format
+        String accessionNumber = contents.substring(contents.indexOf("ACCESSION") + 10,
+                                                     contents.indexOf("VERSION") - 1)
+                                             .replaceAll("\\s", "");
+        String fasta = ">" + accessionNumber + "\n" + sequence + "\n";
+
+        // Save the sequence to a file
+        String outputFilename = accessionNumber + ".txt";
+        File outputFile = new File(outputFilename);
+        FileWriter writer = new FileWriter(outputFile);
+        writer.write(fasta);
+        writer.close();
+
+        System.out.println("FASTA-formatted sequence saved to " + outputFilename);
+    }
+}
