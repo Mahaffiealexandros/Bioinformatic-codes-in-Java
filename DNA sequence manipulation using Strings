@@ -1,0 +1,31 @@
+public class DNASequenceAnalysis {
+    public static void main(String[] args) {
+        String dnaSeq = "AGTTAGCTAGGAG";
+        int nucleotideCount = dnaSeq.length();
+        int gcCount = 0, purineCount = 0, pyrimidineCount = 0;
+        
+        // Count the number of GC pairs, purines, and pyrimidines
+        for (int i = 0; i < dnaSeq.length(); i++) {
+            char nucleotide = dnaSeq.charAt(i);
+            if (nucleotide == 'G' || nucleotide == 'C') {
+                gcCount++;
+            }
+            if (nucleotide == 'A' || nucleotide == 'G') {
+                purineCount++;
+            } else if (nucleotide == 'C' || nucleotide == 'T') {
+                pyrimidineCount++;
+            }
+        }
+        
+        // Calculate percentages
+        double gcPercentage = (double) gcCount / nucleotideCount * 100;
+        double purinePercentage = (double) purineCount / nucleotideCount * 100;
+        
+        // Print results
+        System.out.println("Number of nucleotides: " + nucleotideCount);
+        System.out.printf("GC content: %.2f%%\n", gcPercentage);
+        System.out.println("Number of purines: " + purineCount);
+        System.out.println("Number of pyrimidines: " + pyrimidineCount);
+        System.out.printf("Purine content: %.2f%%\n", purinePercentage);
+    }
+}
