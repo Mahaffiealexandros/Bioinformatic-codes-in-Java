@@ -1,0 +1,10 @@
+public class DNASequence {
+    public static void main(String[] args) {
+        String sequence = "ATCGATCGTAGCTAGCTAGCTAGCTGACTGAC";
+        int start = 5;
+        int end = 12;
+
+        String subsequence = sequence.substring(start, end);
+        System.out.println("Subsequence: " + subsequence);
+    }
+}
