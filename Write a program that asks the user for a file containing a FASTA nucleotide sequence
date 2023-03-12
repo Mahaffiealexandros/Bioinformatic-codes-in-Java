@@ -1,0 +1,101 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Translation {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Get the filename from the user and validate it
+        File file = null;
+        do {
+            System.out.print("Enter filename containing FASTA nucleotide sequence: ");
+            String filename = scanner.nextLine();
+            file = new File(filename);
+            if (!file.exists()) {
+                System.out.println("Error: file not found");
+            }
+        } while (!file.exists());
+
+        // Read the FASTA sequence from the file
+        String sequence = "";
+        try {
+            Scanner fileScanner = new Scanner(file);
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                if (line.startsWith(">")) {
+                    continue; // Skip the header line
+                }
+                sequence += line.trim();
+            }
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // Validate that the sequence is in FASTA format
+        if (!sequence.matches("^[ACGTN]+$")) {
+            System.out.println("Error: sequence is not in FASTA format");
+            return;
+        }
+
+        // Get the frame number from the user and validate it
+        int frameNumber = 0;
+        do {
+            System.out.print("Enter frame number (1-6): ");
+            String input = scanner.nextLine();
+            try {
+                frameNumber = Integer.parseInt(input);
+                if (frameNumber < 1 || frameNumber > 6) {
+                    System.out.println("Error: frame number must be between 1 and 6");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: invalid frame number");
+            }
+        } while (frameNumber < 1 || frameNumber > 6);
+
+        // Translate the nucleotide sequence in the selected frame
+        String frameSequence = "";
+        if (frameNumber <= 3) {
+            frameSequence = sequence.substring(frameNumber - 1);
+        } else {
+            frameSequence = reverseComplement(sequence).substring(3 - (6 - frameNumber));
+        }
+        String proteinSequence = translate(frameSequence);
+
+        // Print the protein sequence to the screen
+        System.out.println("Protein sequence:");
+        System.out.println(proteinSequence);
+    }
+
+    // Helper method to get the reverse complement of a nucleotide sequence
+    private static String reverseComplement(String sequence) {
+        String complement = sequence.replace('A', 't').replace('T', 'a').replace('C', 'g').replace('G', 'c').toUpperCase();
+        return new StringBuilder(complement).reverse().toString();
+    }
+
+    // Helper method to translate a nucleotide sequence into a protein sequence
+    private static String translate(String sequence) {
+        String protein = "";
+        for (int i = 0; i < sequence.length() - 2; i += 3) {
+            String codon = sequence.substring(i, i + 3);
+            String aminoAcid = getAminoAcid(codon);
+            protein += aminoAcid;
+        }
+        return protein;
+    }
+
+    // Helper method to get the amino acid corresponding to a codon
+    private static String getAminoAcid(String codon) {
+        switch (codon.toUpperCase()) {
+            case "TTT":
+            case "TTC":
+                return "Phe";
+            case "TTA":
+            case "TTG":
+            case "CTT":
+            case "CTC":
+            case "CTA":
+            case "CTG":
+                return "Leu";
+            case "ATT
