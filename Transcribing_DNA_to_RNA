@@ -1,0 +1,13 @@
+public class DNAtoRNA {
+    public static void main(String[] args) {
+        // Create a DNA sequence string
+        String dnaSequence = "ATCGATCGTACGTTAGCTAGCTA";
+        
+        // Transcribe the DNA sequence to RNA
+        String rnaSequence = dnaSequence.replace('T', 'U');
+        
+        // Display the DNA and RNA sequences
+        System.out.println("DNA sequence: " + dnaSequence);
+        System.out.println("RNA sequence: " + rnaSequence);
+    }
+}
