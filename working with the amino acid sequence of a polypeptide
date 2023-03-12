@@ -1,0 +1,58 @@
+import java.util.Scanner;
+
+public class AminoAcids {
+    public static void main(String[] args) {
+        // Define the amino acid sequence array
+        String[] aminoAcids = {"Phe", "Val", "Asn", "Gln", "His", "Leu", "Cys", "Gly", "Ser"};
+
+        // Print the amino acid sequence array
+        System.out.println("Amino acid sequence: ");
+        for (String aa : aminoAcids) {
+            System.out.print(aa + " ");
+        }
+        System.out.println();
+
+        // Determine the number of amino acids and print it
+        int numAminoAcids = aminoAcids.length;
+        System.out.println("Number of amino acids: " + numAminoAcids);
+
+        // Add "His" to the end of the polypeptide and print the resulting array
+        String[] newAminoAcids = new String[numAminoAcids + 1];
+        for (int i = 0; i < numAminoAcids; i++) {
+            newAminoAcids[i] = aminoAcids[i];
+        }
+        newAminoAcids[numAminoAcids] = "His";
+        System.out.println("Amino acid sequence with His added to the end: ");
+        for (String aa : newAminoAcids) {
+            System.out.print(aa + " ");
+        }
+        System.out.println();
+
+        // Ask the user for a position and print the corresponding amino acid
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter a number between 1 and " + numAminoAcids + ": ");
+        int position = scanner.nextInt();
+        System.out.println("Amino acid at position " + position + ": " + aminoAcids[position - 1]);
+
+        // Get two positions from the user and invert the amino acid sequence between them
+        System.out.print("Enter the first position: ");
+        int startPos = scanner.nextInt();
+        System.out.print("Enter the second position: ");
+        int endPos = scanner.nextInt();
+        for (int i = startPos - 1, j = endPos - 1; i < j; i++, j--) {
+            String temp = aminoAcids[i];
+            aminoAcids[i] = aminoAcids[j];
+            aminoAcids[j] = temp;
+        }
+        System.out.println("Amino acid sequence before inversion: ");
+        for (String aa : newAminoAcids) {
+            System.out.print(aa + " ");
+        }
+        System.out.println();
+        System.out.println("Amino acid sequence after inversion: ");
+        for (String aa : aminoAcids) {
+            System.out.print(aa + " ");
+        }
+        System.out.println();
+    }
+}
