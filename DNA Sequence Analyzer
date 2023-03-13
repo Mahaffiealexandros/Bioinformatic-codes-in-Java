@@ -1,0 +1,87 @@
+import org.biojava.nbio.core.sequence.DNASequence;
+import org.biojava.nbio.core.sequence.io.FastaReader;
+import org.biojava.nbio.core.sequence.template.Sequence;
+import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class DNASequenceAnalyzer {
+
+    public static void main(String[] args) {
+        String filePath = "input.fasta";
+        DNASequence dnaSeq = readFastaFile(filePath);
+
+        // Reverse Complement
+        DNASequence revComp = reverseComplement(dnaSeq);
+        System.out.println("Reverse Complement: " + revComp.getSequenceAsString());
+
+        // Translation
+        String aminoAcidSeq = translate(dnaSeq);
+        System.out.println("Amino Acid Sequence: " + aminoAcidSeq);
+
+        // Codon Usage
+        Map<String, Integer> codonCounts = countCodons(dnaSeq);
+        System.out.println("Codon Usage: " + codonCounts);
+
+        // GC Content
+        double gcContent = calculateGCContent(dnaSeq);
+        System.out.println("GC Content: " + gcContent);
+    }
+
+    // Method to read a DNA sequence from a FASTA file
+    public static DNASequence readFastaFile(String filePath) {
+        try {
+            FastaReader<Sequence<NucleotideCompound>, NucleotideCompound> fastaReader =
+                    new FastaReader<>(Paths.get(filePath), NucleotideCompound.DNA_COMPACT);
+            return (DNASequence) fastaReader.nextSequence();
+        } catch (IOException e) {
+            System.err.println("Error reading FASTA file: " + e.getMessage());
+            return null;
+        }
+    }
+
+    // Method to get the reverse complement of a DNA sequence
+    public static DNASequence reverseComplement(DNASequence dnaSeq) {
+        DNASequence reverseSeq = dnaSeq.getReverseComplement();
+        return reverseSeq;
+    }
+
+    // Method to translate a DNA sequence to its corresponding amino acid sequence
+    public static String translate(DNASequence dnaSeq) {
+        String aminoAcidSeq = dnaSeq.getProteinSequence().getSequenceAsString();
+        return aminoAcidSeq;
+    }
+
+    // Method to count the number of occurrences of each codon in a DNA sequence
+    public static Map<String, Integer> countCodons(DNASequence dnaSeq) {
+        Map<String, Integer> codonCounts = new HashMap<>();
+        List<String> codons = generateCodons();
+
+        // Initialize codon counts to 0
+        for (String codon : codons) {
+            codonCounts.put(codon, 0);
+        }
+
+        // Count the number of occurrences of each codon in the DNA sequence
+        String dnaSeqString = dnaSeq.getSequenceAsString();
+        for (int i = 0; i < dnaSeqString.length() - 2; i += 3) {
+            String codon = dnaSeqString.substring(i, i + 3);
+            if (codonCounts.containsKey(codon)) {
+                codonCounts.put(codon, codonCounts.get(codon) + 1);
+            }
+        }
+
+        return codonCounts;
+    }
+
+    // Method to calculate the GC content of a DNA sequence
+    public static double calculateGCContent(DNASequence dnaSeq) {
+        String dnaSeqString = dnaSeq.getSequenceAsString();
+        int gcCount = 0;
+        for (int i = 0; i < dnaSeqString.length(); i++) {
+            char nucleotide = dnaSeqString
