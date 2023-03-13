@@ -1,0 +1,81 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.core.Instances;
+
+public class ProteinSSPrediction {
+    public static void main(String[] args) {
+        String modelFilePath = "ssModel.model"; // path to the trained model file
+        String inputFilePath = "protein.fasta"; // path to the protein sequence in FASTA format
+        
+        // load the trained ANN model from the file
+        MultilayerPerceptron annModel = loadModel(modelFilePath);
+        
+        // load the protein sequence from the FASTA file
+        String proteinSeq = loadProteinSeq(inputFilePath);
+        
+        // perform secondary structure prediction on the protein sequence
+        String ssPrediction = predictSS(proteinSeq, annModel);
+        
+        // output the predicted secondary structure to the console
+        System.out.println("Secondary Structure Prediction: " + ssPrediction);
+    }
+    
+    // Method to load the trained ANN model from a file
+    public static MultilayerPerceptron loadModel(String filePath) {
+        MultilayerPerceptron annModel = new MultilayerPerceptron();
+        try {
+            annModel = (MultilayerPerceptron) weka.core.SerializationHelper.read(filePath);
+        } catch (Exception e) {
+            System.err.println("Error loading model file: " + e.getMessage());
+        }
+        return annModel;
+    }
+    
+    // Method to load the protein sequence from a FASTA file
+    public static String loadProteinSeq(String filePath) {
+        String proteinSeq = "";
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            String line = reader.readLine();
+            while (line != null) {
+                if (!line.startsWith(">")) {
+                    proteinSeq += line.trim();
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.err.println("Error loading protein sequence file: " + e.getMessage());
+        }
+        return proteinSeq;
+    }
+    
+    // Method to perform secondary structure prediction on a protein sequence using an ANN model
+    public static String predictSS(String proteinSeq, MultilayerPerceptron annModel) {
+        String ssPrediction = "";
+        try {
+            // convert the protein sequence to a WEKA instance object
+            Instances proteinInstance = ProteinSequenceToWeka.convert(proteinSeq);
+            
+            // make the prediction using the ANN model
+            double[] predictions = annModel.distributionForInstance(proteinInstance.firstInstance());
+            
+            // convert the prediction probabilities to secondary structure elements (H, E, C)
+            for (double prediction : predictions) {
+                if (prediction == Math.max(predictions[0], Math.max(predictions[1], predictions[2]))) {
+                    ssPrediction += "H"; // alpha helix
+                } else if (prediction == Math.max(predictions[1], Math.max(predictions[0], predictions[2]))) {
+                    ssPrediction += "E"; // beta sheet
+                } else if (prediction == Math.max(predictions[2], Math.max(predictions[0], predictions[1]))) {
+                    ssPrediction += "C"; // coil
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error predicting secondary structure: " + e.getMessage());
+        }
+        return ssPrediction;
+    }
+}
